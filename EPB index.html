@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#08080a"/>
+  <g transform="translate(30,38)" stroke-linecap="round" fill="none">
+    <path d="M0 14 Q4 2 8 14 T16 14 T24 8 T32 16 T40 12" stroke="#b061ff" stroke-width="2.4"/>
+  </g>
+  <text x="50" y="68" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#f5f4f2">EPB</text>
+</svg>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:#050507;}
+  ::-webkit-scrollbar{width:0;height:0;display:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;transition:transform 0.09s ease;}
+  button:active{transform:scale(0.96);}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--tilt,0deg))}50%{transform:translateY(-16px) rotate(var(--tilt,0deg))}}
+  @keyframes eq{0%,100%{transform:scaleY(0.28)}50%{transform:scaleY(1)}}
+  @keyframes glowpulse{0%,100%{opacity:0.55}50%{opacity:1}}
+  @keyframes nfc{0%{transform:scale(0.6);opacity:0}40%{opacity:0.9}100%{transform:scale(1.9);opacity:0}}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes screenIn{from{opacity:1;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes floatUp{0%{transform:translateY(10px);opacity:1}100%{transform:translateY(0);opacity:1}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes flashfade{0%{opacity:1}100%{opacity:0}}
+  @keyframes tapbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes ringspin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+</style>
+</helmet>
+
+<div style="width:100%;height:100vh;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#050507;overflow:hidden;">
+  <div style="width:1080px;height:1920px;transform:scale({{ scale }});transform-origin:center center;position:relative;background:#08080a;color:#f5f4f2;font-family:'Schibsted Grotesk',sans-serif;overflow:hidden;display:flex;flex-direction:column;border-radius:2px;box-shadow:0 40px 120px rgba(0,0,0,0.6);">
+
+    <!-- ambient glow -->
+    <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(110% 60% at 50% -8%,rgba(176,97,255,0.20),transparent 60%),radial-gradient(80% 40% at 110% 100%,rgba(120,70,255,0.14),transparent 55%);z-index:0;"></div>
+
+    <!-- PHOTOBOOTH FULL-SCREEN FLASH -->
+    <sc-if value="{{ pbFlash }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#fff;z-index:80;animation:flashfade 0.5s ease forwards;pointer-events:none;"></div>
+    </sc-if>
+
+    <!-- STILL THERE? inactivity prompt -->
+    <sc-if value="{{ stillThere }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ dismissStillThere }}" style="position:absolute;inset:0;z-index:60;background:rgba(5,5,7,0.86);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:72px;">
+        <div style="font-size:120px;margin-bottom:6px;">👂</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.24em;color:#b061ff;margin-bottom:22px;">// STILL THERE?</div>
+        <h2 style="font-size:76px;font-weight:800;letter-spacing:-0.02em;line-height:0.98;margin:0 0 22px;text-wrap:balance;">Don't let those ears go unprotected.</h2>
+        <p style="font-size:32px;color:#a9a8b0;max-width:720px;margin:0 0 52px;line-height:1.35;">You only get one pair. Finish up and keep the music — not the ringing.</p>
+        <div style="display:inline-flex;align-items:center;gap:16px;padding:30px 58px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:34px;font-weight:800;box-shadow:0 0 60px rgba(176,97,255,0.5);animation:tapbob 2.2s ease-in-out infinite;">👆 I'm still shopping</div>
+        <div style="margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:22px;color:#6c6b73;letter-spacing:0.1em;">Returning to start in {{ countdown }}s</div>
+      </div>
+    </sc-if>
+
+    <!-- HEADER -->
+    <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:38px 44px 26px;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(8,8,10,0.55);backdrop-filter:blur(6px);">
+        <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:14px;">
+          <span style="display:flex;align-items:flex-end;gap:3px;height:26px;">
+            <sc-for list="{{ bars }}" as="b" hint-placeholder-count="4">
+              <span style="{{ b.miniStyle }}"></span>
+            </sc-for>
+          </span>
+          <span style="font-weight:800;font-size:25px;letter-spacing:0.16em;">EPB</span>
+        </button>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <sc-if value="{{ happyHour }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:9px;padding:11px 18px;border-radius:100px;background:rgba(242,182,87,0.12);border:1px solid rgba(242,182,87,0.35);">
+              <span style="width:8px;height:8px;border-radius:50%;background:#f2b657;box-shadow:0 0 12px #f2b657;animation:glowpulse 1.6s infinite;"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;letter-spacing:0.1em;color:#f2c878;">HAPPY HOUR · {{ hhCountdown }}</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ cartHasItems }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ goCart }}" style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:100px;background:rgba(176,97,255,0.14);border:1px solid rgba(176,97,255,0.4);">
+              <span style="font-size:20px;">🛒</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#d7b4ff;">{{ cartCount }} · {{ totalFmt }}</span>
+            </button>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- PROGRESS STEPPER -->
+    <sc-if value="{{ showStepper }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;z-index:4;display:flex;align-items:center;gap:14px;padding:18px 48px;background:rgba(8,8,10,0.4);border-bottom:1px solid rgba(255,255,255,0.06);">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+          <span style="{{ s.circleStyle }}">{{ s.mark }}</span>
+          <span style="{{ s.labelStyle }}">{{ s.label }}</span>
+          <sc-if value="{{ s.notLast }}" hint-placeholder-val="{{ true }}"><span style="{{ s.lineStyle }}"></span></sc-if>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- BODY -->
+    <div style="position:relative;z-index:2;flex:1;min-height:0;">
+
+      <!-- ================= IDLE ================= -->
+      <sc-if value="{{ s_idle }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Idle / Attract" onClick="{{ onStart }}" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;padding:0;">
+          <div style="padding:80px 64px 0;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:flex-end;gap:7px;height:64px;">
+              <sc-for list="{{ bars }}" as="b" hint-placeholder-count="7">
+                <span style="{{ b.bigStyle }}"></span>
+              </sc-for>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.16em;color:#6c6b73;text-align:right;">NOW SERVING<br><span style="color:#b061ff;">{{ venueName }}</span></div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 64px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.28em;color:#b061ff;margin-bottom:30px;">// PROTECT YOUR HEARING</div>
+            <h1 style="font-size:120px;line-height:0.94;font-weight:800;letter-spacing:-0.03em;margin:0 0 36px;text-wrap:balance;">One night can last a <span style="color:#b061ff;text-shadow:0 0 60px rgba(176,97,255,0.6);">lifetime.</span></h1>
+            <p style="font-size:34px;line-height:1.35;color:#a9a8b0;max-width:760px;margin:0 0 60px;font-weight:400;">Clubs run at 110 dB. Hearing damage starts at 85. Grab premium earplugs in seconds — and keep the music, not the ringing.</p>
+
+            <div style="display:flex;gap:18px;">
+              <div style="flex:1;padding:30px 28px;border-radius:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:58px;font-weight:800;letter-spacing:-0.02em;">110<span style="font-size:30px;color:#9a99a2;">dB</span></div>
+                <div style="font-size:19px;color:#8d8c95;margin-top:6px;line-height:1.3;">average club. Damage in &lt; 2 hrs.</div>
+              </div>
+              <div style="flex:1;padding:30px 28px;border-radius:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:58px;font-weight:800;letter-spacing:-0.02em;">1<span style="font-size:30px;color:#9a99a2;">in</span>5</div>
+                <div style="font-size:19px;color:#8d8c95;margin-top:6px;line-height:1.3;">adults live with tinnitus.</div>
+              </div>
+              <div style="flex:1;padding:30px 28px;border-radius:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:58px;font-weight:800;letter-spacing:-0.02em;">3<span style="font-size:30px;color:#9a99a2;">brands</span></div>
+                <div style="font-size:19px;color:#8d8c95;margin-top:6px;line-height:1.3;">from $43. Plus a free photo.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:center;gap:70px;margin-top:56px;">
+              <div style="--tilt:-7deg;animation:floaty 4.2s ease-in-out infinite;display:flex;flex-direction:column;align-items:center;gap:14px;">
+                <img src="images/loop-gold.png" alt="Loop Experience 2" style="height:230px;width:auto;filter:drop-shadow(0 20px 40px rgba(176,97,255,0.25));" />
+                <span style="display:flex;align-items:center;gap:12px;"><img src="images/loop-logo.png" alt="Loop" style="height:48px;width:auto;" /><span style="font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:0.14em;color:#7a7982;">$55</span></span>
+              </div>
+              <div style="--tilt:4deg;animation:floaty 4.8s ease-in-out infinite 0.6s;display:flex;flex-direction:column;align-items:center;gap:14px;">
+                <img src="images/hears-silvernight.png" alt="HEARS High Fidelity" style="height:260px;width:auto;filter:drop-shadow(0 20px 40px rgba(176,97,255,0.25));" />
+                <span style="display:flex;align-items:center;gap:12px;"><img src="images/hears-logo.svg" alt="Hears" style="height:34px;width:auto;" /><span style="font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:0.14em;color:#7a7982;">$46</span></span>
+              </div>
+              <div style="--tilt:-4deg;animation:floaty 4.5s ease-in-out infinite 1.1s;display:flex;flex-direction:column;align-items:center;gap:14px;">
+                <img src="images/earpeace-cutout.png" alt="EarPeace Music Pro" style="height:290px;width:auto;margin-top:-60px;filter:drop-shadow(0 20px 40px rgba(176,97,255,0.25));" />
+                <span style="display:flex;align-items:center;gap:12px;"><img src="images/earpeace-logo.png" alt="EarPeace" style="height:70px;width:auto;" /><span style="font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:0.14em;color:#7a7982;">$43</span></span>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ happyHour }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:0 64px 28px;padding:24px 32px;border-radius:16px;background:linear-gradient(90deg,rgba(242,182,87,0.16),rgba(242,182,87,0.04));border:1px solid rgba(242,182,87,0.3);display:flex;align-items:center;gap:18px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.1em;color:#f2c878;padding:8px 14px;border-radius:8px;background:rgba(242,182,87,0.16);">HAPPY HOUR</span>
+              <span style="flex:1;font-size:26px;color:#f4e6c8;font-weight:500;">5% off everything · or BOGO 15% off — best deal applied automatically.</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#f2c878;white-space:nowrap;">ends {{ hhCountdown }}</span>
+            </div>
+          </sc-if>
+
+          <div style="overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);padding:22px 0;background:rgba(0,0,0,0.25);">
+            <div style="display:flex;width:max-content;animation:marquee 22s linear infinite;font-family:'JetBrains Mono',monospace;font-size:24px;letter-spacing:0.12em;color:#6c6b73;">
+              <span style="padding-right:40px;">PROTECT YOUR HEARING&nbsp;·&nbsp;MADE FOR MUSIC, NOT SILENCE&nbsp;·&nbsp;NO RINGING EARS&nbsp;·&nbsp;FREE PHOTOBOOTH&nbsp;·&nbsp;PROTECT YOUR HEARING&nbsp;·&nbsp;MADE FOR MUSIC, NOT SILENCE&nbsp;·&nbsp;NO RINGING EARS&nbsp;·&nbsp;FREE PHOTOBOOTH&nbsp;·&nbsp;</span>
+              <span style="padding-right:40px;">PROTECT YOUR HEARING&nbsp;·&nbsp;MADE FOR MUSIC, NOT SILENCE&nbsp;·&nbsp;NO RINGING EARS&nbsp;·&nbsp;FREE PHOTOBOOTH&nbsp;·&nbsp;PROTECT YOUR HEARING&nbsp;·&nbsp;MADE FOR MUSIC, NOT SILENCE&nbsp;·&nbsp;NO RINGING EARS&nbsp;·&nbsp;FREE PHOTOBOOTH&nbsp;·&nbsp;</span>
+            </div>
+          </div>
+
+          <div style="padding:60px 64px 80px;text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:20px;padding:34px 70px;border-radius:100px;background:#b061ff;box-shadow:0 0 80px rgba(176,97,255,0.55);animation:tapbob 2.2s ease-in-out infinite;">
+              <span style="font-size:38px;">👆</span>
+              <span style="font-size:42px;font-weight:800;letter-spacing:-0.01em;color:#0a0a0a;">Tap anywhere to start</span>
+            </div>
+            <div style="margin-top:26px;font-size:22px;color:#6c6b73;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;">TAP · INSERT · APPLE PAY · GOOGLE PAY</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= BROWSE ================= -->
+      <sc-if value="{{ s_browse }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Browse / Compare" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;padding:44px 44px 0;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.24em;color:#b061ff;margin-bottom:14px;">// STEP 1 — CHOOSE YOUR PROTECTION</div>
+          <h2 style="font-size:64px;font-weight:800;letter-spacing:-0.02em;margin:0 0 8px;">Pick your earplugs</h2>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:30px;font-size:23px;color:#8d8c95;">
+            <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#66e0a3;box-shadow:0 0 10px #66e0a3;"></span>
+            Every purchase includes a <span style="color:#d7b4ff;font-weight:600;">free photobooth</span>. Show the world you protect your hearing.
+          </div>
+
+          <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:26px;overflow-y:auto;padding-bottom:8px;align-content:start;">
+            <sc-for list="{{ browseCards }}" as="p" hint-placeholder-count="9">
+              <button onClick="{{ p.onSelect }}" style="display:flex;flex-direction:column;text-align:left;">
+                <div style="{{ p.thumbStyle }}">
+                  <sc-if value="{{ p.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;left:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:0.06em;color:#0a0a0a;background:#b061ff;padding:5px 9px;border-radius:5px;white-space:nowrap;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,0.4);z-index:2;">{{ p.badge }}</span></sc-if>
+                  <sc-if value="{{ p.soldOut }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;right:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:0.06em;color:#f5f4f2;background:#1b1b20;padding:5px 9px;border-radius:5px;white-space:nowrap;line-height:1;z-index:2;">SOLD OUT</span></sc-if>
+                  <sc-if value="{{ p.noImage }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#5a5961;letter-spacing:0.08em;text-align:center;">[ {{ p.brand }}<br>SHOT ]</span>
+                  </sc-if>
+                </div>
+                <div style="margin-top:16px;font-size:28px;font-weight:700;letter-spacing:-0.01em;line-height:1.1;">{{ p.name }}</div>
+                <div style="font-size:18px;color:#8d8c95;margin-top:5px;line-height:1.3;">{{ p.category }}</div>
+                <div style="font-size:26px;font-weight:800;margin-top:10px;letter-spacing:-0.01em;">{{ p.priceFmt }}</div>
+              </button>
+            </sc-for>
+          </div>
+
+          <div style="margin:22px 0 32px;padding:26px 30px;border-radius:22px;background:linear-gradient(120deg,rgba(176,97,255,0.16),rgba(176,97,255,0.03) 60%),rgba(255,255,255,0.02);border:1px solid rgba(176,97,255,0.25);display:flex;align-items:center;gap:22px;">
+            <div style="width:66px;height:66px;border-radius:18px;flex-shrink:0;background:radial-gradient(circle at 35% 30%,rgba(176,97,255,0.5),rgba(176,97,255,0.14));border:1px solid rgba(176,97,255,0.4);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 24px rgba(176,97,255,0.35);">📸</div>
+            <div style="flex:1;">
+              <div style="font-size:28px;font-weight:700;">Just here for photos?</div>
+              <div style="font-size:21px;color:#9a99a2;margin-top:2px;">Grab a photobooth session — no purchase needed.</div>
+            </div>
+            <button onClick="{{ onPhotoOnly }}" style="display:inline-flex;align-items:center;gap:12px;padding:22px 34px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:24px;font-weight:800;box-shadow:0 0 34px rgba(176,97,255,0.45);flex-shrink:0;">Photobooth · {{ photoboothPriceFmt }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= PHOTO-ONLY WARNING ================= -->
+      <sc-if value="{{ s_photowarn }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Protection Warning" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.24em;color:#ff9a5a;margin-bottom:26px;">// BEFORE YOU GO UNPROTECTED</div>
+          <div style="font-size:110px;margin-bottom:26px;">⚠️</div>
+          <h2 style="font-size:62px;font-weight:800;letter-spacing:-0.02em;margin:0 0 26px;line-height:1.05;text-wrap:balance;">Artists and music producers all over the world have been canceling shows due to hearing issues.</h2>
+          <p style="font-size:32px;color:#cfcdd6;max-width:760px;margin:0 0 56px;line-height:1.4;font-weight:600;">Are you sure you want to go unprotected tonight?</p>
+          <div style="display:flex;flex-direction:column;gap:16px;width:100%;max-width:620px;">
+            <button onClick="{{ goBrowse }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:32px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:30px;font-weight:800;box-shadow:0 0 60px rgba(176,97,255,0.45);">Show me earplugs instead →</button>
+            <button onClick="{{ confirmNoProtection }}" style="width:100%;padding:24px;border-radius:100px;border:1px solid rgba(255,255,255,0.16);font-size:22px;color:#9a99a2;">No protection — just the photo (<span>{{ photoboothPriceFmt }}</span>)</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= DETAIL ================= -->
+      <sc-if value="{{ s_detail }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Product Detail" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;padding:40px 44px 0;">
+          <button onClick="{{ goBrowse }}" style="display:inline-flex;align-items:center;gap:10px;font-size:22px;color:#9a99a2;margin-bottom:24px;align-self:flex-start;">← All earplugs</button>
+
+          <div style="{{ cpHeroStyle }}">
+            <sc-if value="{{ cpNoImage }}" hint-placeholder-val="{{ true }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:20px;color:#6c6b73;letter-spacing:0.1em;text-align:center;z-index:1;">[ {{ cpUpper }}<br>PRODUCT SHOT ]</span>
+            </sc-if>
+            <sc-if value="{{ cpHasLogo }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ cpLogoStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ cpNoLogo }}" hint-placeholder-val="{{ true }}">
+              <div style="position:absolute;top:26px;left:26px;font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:0.18em;color:#b061ff;">{{ cpBrand }}</div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ cpHasViews }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:14px;margin-top:16px;flex-shrink:0;">
+              <sc-for list="{{ cpViews }}" as="v" hint-placeholder-count="3">
+                <button onClick="{{ v.onPick }}" style="{{ v.style }}"></button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="flex:1;overflow-y:auto;padding-top:30px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
+              <div>
+                <h2 style="font-size:62px;font-weight:800;letter-spacing:-0.02em;margin:0;line-height:1;">{{ cpName }}</h2>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;padding:10px 16px;border-radius:10px;background:rgba(102,224,163,0.12);color:#66e0a3;">{{ cpSnr }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;padding:10px 16px;border-radius:10px;background:rgba(255,255,255,0.06);color:#cfcdd6;">♻ REUSABLE</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;padding:10px 16px;border-radius:10px;background:rgba(255,255,255,0.06);color:#cfcdd6;">CASE INCLUDED</span>
+                  <span style="font-size:20px;color:#7a7982;">{{ cpHandle }}</span>
+                </div>
+              </div>
+              <div style="font-size:64px;font-weight:800;letter-spacing:-0.02em;">{{ cpPriceFmt }}</div>
+            </div>
+
+            <p style="font-size:27px;line-height:1.4;color:#b6b5bd;margin:26px 0 30px;max-width:840px;">{{ cpDesc }}</p>
+
+            <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:34px;">
+              <sc-for list="{{ cpBenefits }}" as="bn" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:16px;font-size:25px;color:#dedce4;">
+                  <span style="width:30px;height:30px;border-radius:50%;background:rgba(176,97,255,0.16);color:#c89bff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✓</span>
+                  {{ bn }}
+                </div>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ cpHasColorways }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-bottom:34px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:0.16em;color:#8d8c95;margin-bottom:18px;">COLORWAY — {{ cpColorName }}</div>
+                <div style="display:flex;gap:18px;flex-wrap:wrap;">
+                  <sc-for list="{{ cpColorways }}" as="c" hint-placeholder-count="4">
+                    <button onClick="{{ c.onPick }}" style="{{ c.wrapStyle }}">
+                      <span style="{{ c.dotStyle }}"></span>
+                      <span style="font-size:17px;color:#cfcdd6;">{{ c.name }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="padding:26px 0 40px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:20px;">
+            <div style="display:flex;align-items:center;gap:6px;padding:8px;border-radius:100px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);">
+              <button onClick="{{ onDetailDec }}" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.08);font-size:34px;font-weight:600;display:flex;align-items:center;justify-content:center;">−</button>
+              <span style="width:56px;text-align:center;font-size:32px;font-weight:700;">{{ detailQty }}</span>
+              <button onClick="{{ onDetailInc }}" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.08);font-size:30px;font-weight:600;display:flex;align-items:center;justify-content:center;">+</button>
+            </div>
+            <button onClick="{{ onAddAndCheckout }}" style="{{ addBtnStyle }}">{{ addBtnLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= CART ================= -->
+      <sc-if value="{{ s_cart }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Cart" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;padding:44px 44px 0;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.24em;color:#b061ff;margin-bottom:14px;">// STEP 2 — YOUR ORDER</div>
+          <h2 style="font-size:64px;font-weight:800;letter-spacing:-0.02em;margin:0 0 26px;">Your booth bag</h2>
+
+          <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:18px;">
+            <sc-for list="{{ cartItems }}" as="it" hint-placeholder-count="2">
+              <div style="display:flex;gap:24px;align-items:center;padding:26px;border-radius:20px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.09);">
+                <sc-if value="{{ it.hasImage }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ it.thumbStyle }}"></div>
+                </sc-if>
+                <sc-if value="{{ it.noImage }}" hint-placeholder-val="{{ true }}">
+                  <div style="width:120px;height:120px;flex-shrink:0;border-radius:14px;background:repeating-linear-gradient(135deg,#17171d 0 11px,#121217 11px 22px);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.06);">
+                    <span style="font-size:34px;">{{ it.icon }}</span>
+                  </div>
+                </sc-if>
+                <div style="flex:1;">
+                  <div style="font-size:34px;font-weight:700;line-height:1.05;">{{ it.name }}</div>
+                  <sc-if value="{{ it.hasSwatch }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+                      <span style="{{ it.swatchStyle }}"></span>
+                      <span style="font-size:20px;color:#9a99a2;">{{ it.colorway }}</span>
+                    </div>
+                  </sc-if>
+                  <div style="font-size:21px;color:#7a7982;margin-top:6px;">{{ it.priceFmt }} each</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px;border-radius:100px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);">
+                  <button onClick="{{ it.onDec }}" style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.08);font-size:30px;display:flex;align-items:center;justify-content:center;">−</button>
+                  <span style="width:44px;text-align:center;font-size:28px;font-weight:700;">{{ it.qty }}</span>
+                  <button onClick="{{ it.onInc }}" style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.08);font-size:26px;display:flex;align-items:center;justify-content:center;">+</button>
+                </div>
+                <div style="width:130px;text-align:right;font-size:34px;font-weight:800;">{{ it.lineFmt }}</div>
+              </div>
+            </sc-for>
+
+            <button onClick="{{ goBrowse }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:10px;padding:18px 28px;border-radius:100px;border:1px solid rgba(255,255,255,0.16);font-size:22px;color:#cfcdd6;margin-top:4px;">+ Add more protection</button>
+
+            <sc-if value="{{ bogoNudge }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ goBrowse }}" style="margin-top:8px;width:100%;text-align:left;padding:26px 30px;border-radius:18px;background:linear-gradient(90deg,rgba(242,182,87,0.18),rgba(242,182,87,0.04));border:1px solid rgba(242,182,87,0.4);display:flex;align-items:center;gap:18px;">
+                <span style="font-size:40px;">🎁</span>
+                <div style="flex:1;">
+                  <div style="font-size:27px;font-weight:700;color:#f4d79a;">Add a 2nd pair → unlock BOGO</div>
+                  <div style="font-size:21px;color:#d8be8a;">Happy Hour takes 15% off your cheaper pair. Protect a friend too.</div>
+                </div>
+                <span style="font-size:24px;font-weight:800;color:#f2c878;">+ Add →</span>
+              </button>
+            </sc-if>
+
+            <div style="margin-top:8px;padding:26px 30px;border-radius:18px;background:linear-gradient(90deg,rgba(102,224,163,0.12),rgba(102,224,163,0.03));border:1px solid rgba(102,224,163,0.28);display:flex;align-items:center;gap:18px;">
+              <span style="font-size:40px;">📸</span>
+              <div>
+                <div style="font-size:27px;font-weight:700;color:#bff3d8;">Free photobooth included</div>
+                <div style="font-size:21px;color:#8fc9ac;">Snap a photo with your new earplugs after you collect them.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:28px 0 38px;border-top:1px solid rgba(255,255,255,0.1);margin-top:18px;">
+            <div style="display:flex;justify-content:space-between;font-size:25px;color:#9a99a2;margin-bottom:12px;"><span>Subtotal</span><span>{{ subtotalFmt }}</span></div>
+            <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;justify-content:space-between;font-size:25px;color:#f2c878;margin-bottom:12px;align-items:center;">
+                <span style="display:flex;align-items:center;gap:10px;"><span style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;padding:5px 10px;border-radius:6px;background:rgba(242,182,87,0.16);">HAPPY HOUR</span>{{ discountLabel }}</span>
+                <span>−{{ discountFmt }}</span>
+              </div>
+            </sc-if>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;margin-bottom:24px;">
+              <span style="font-size:32px;font-weight:700;">Total</span>
+              <span style="font-size:60px;font-weight:800;letter-spacing:-0.02em;">{{ totalFmt }}</span>
+            </div>
+            <button onClick="{{ goReceipt }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:32px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:32px;font-weight:800;box-shadow:0 0 60px rgba(176,97,255,0.45);">Checkout →</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= RECEIPT / CONSENT ================= -->
+      <sc-if value="{{ s_receipt }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Receipt &amp; Consent" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;padding:40px 44px 0;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.24em;color:#b061ff;margin-bottom:12px;">// STEP 3 — RECEIPT &amp; CONSENT</div>
+          <h2 style="font-size:54px;font-weight:800;letter-spacing:-0.02em;margin:0 0 24px;">Where should we send your receipt?</h2>
+
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <button onClick="{{ pickText }}" style="{{ methodTextStyle }}">💬 Text message</button>
+            <button onClick="{{ pickEmail }}" style="{{ methodEmailStyle }}">✉️ Email</button>
+          </div>
+
+          <div style="padding:24px 28px;border-radius:16px;background:rgba(255,255,255,0.05);margin-bottom:10px;min-height:86px;display:flex;align-items:center;{{ contactBorder }}">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:34px;letter-spacing:0.02em;{{ contactColor }}">{{ contactDisplay }}</span>
+            <span style="width:3px;height:38px;background:#b061ff;margin-left:4px;animation:glowpulse 1s steps(1) infinite;"></span>
+          </div>
+          <div style="min-height:34px;margin-bottom:14px;display:flex;align-items:center;gap:9px;">
+            <sc-if value="{{ showContactError }}" hint-placeholder-val="{{ false }}">
+              <span style="color:#ff7a7a;font-size:22px;display:flex;align-items:center;gap:9px;"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,122,122,0.18);display:flex;align-items:center;justify-content:center;font-size:15px;">!</span>{{ contactErrorMsg }}</span>
+            </sc-if>
+            <sc-if value="{{ showContactOk }}" hint-placeholder-val="{{ false }}">
+              <span style="color:#66e0a3;font-size:22px;display:flex;align-items:center;gap:9px;"><span style="width:22px;height:22px;border-radius:50%;background:rgba(102,224,163,0.18);display:flex;align-items:center;justify-content:center;font-size:14px;">✓</span>Looks good — we'll send your receipt here</span>
+            </sc-if>
+          </div>
+
+          <!-- keypad -->
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:6px;">
+            <sc-for list="{{ keyRows }}" as="row" hint-placeholder-count="4">
+              <div style="display:flex;gap:12px;">
+                <sc-for list="{{ row.keys }}" as="k" hint-placeholder-count="3">
+                  <button onClick="{{ k.onPress }}" style="{{ k.style }}">{{ k.label }}</button>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="flex:1;"></div>
+
+          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px;">
+            <button onClick="{{ toggleLegal }}" style="display:flex;align-items:flex-start;gap:16px;text-align:left;padding:20px 22px;border-radius:14px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.1);">
+              <span style="{{ legalBoxStyle }}">{{ legalCheck }}</span>
+              <span style="font-size:22px;line-height:1.35;color:#cfcdd6;"><b style="color:#f5f4f2;">Required.</b> I agree to the Terms of Sale &amp; Privacy Policy, and to receive my receipt via the method above.</span>
+            </button>
+            <button onClick="{{ toggleMarketing }}" style="display:flex;align-items:flex-start;gap:16px;text-align:left;padding:20px 22px;border-radius:14px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.1);">
+              <span style="{{ mktBoxStyle }}">{{ mktCheck }}</span>
+              <span style="font-size:22px;line-height:1.35;color:#9a99a2;"><b style="color:#cfcdd6;">Optional.</b> Send me deals, drops &amp; hearing-health tips from EPB.</span>
+            </button>
+          </div>
+
+          <div style="padding-bottom:34px;">
+            <sc-if value="{{ canCheckout }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ goPay }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:30px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:30px;font-weight:800;box-shadow:0 0 60px rgba(176,97,255,0.45);">Continue to payment · {{ totalFmt }} →</button>
+            </sc-if>
+            <sc-if value="{{ cantCheckout }}" hint-placeholder-val="{{ true }}">
+              <button style="width:100%;padding:30px;border-radius:100px;background:rgba(255,255,255,0.06);color:#6c6b73;font-size:30px;font-weight:800;border:1px solid rgba(255,255,255,0.08);">{{ checkoutHint }}</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= PAYMENT ================= -->
+      <sc-if value="{{ s_pay }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Payment" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px;text-align:center;">
+
+          <sc-if value="{{ payIdle }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.24em;color:#b061ff;margin-bottom:24px;">// AMOUNT DUE</div>
+              <div style="font-size:130px;font-weight:800;letter-spacing:-0.03em;line-height:1;margin-bottom:60px;">{{ totalFmt }}</div>
+
+              <div style="position:relative;width:340px;height:340px;display:flex;align-items:center;justify-content:center;margin-bottom:54px;">
+                <div style="position:absolute;width:200px;height:200px;border-radius:50%;border:2px solid rgba(176,97,255,0.5);animation:nfc 2.4s ease-out infinite;"></div>
+                <div style="position:absolute;width:200px;height:200px;border-radius:50%;border:2px solid rgba(176,97,255,0.5);animation:nfc 2.4s ease-out infinite 0.8s;"></div>
+                <div style="position:absolute;width:200px;height:200px;border-radius:50%;border:2px solid rgba(176,97,255,0.5);animation:nfc 2.4s ease-out infinite 1.6s;"></div>
+                <button onClick="{{ doPay }}" style="width:210px;height:210px;border-radius:50%;background:#b061ff;color:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 0 70px rgba(176,97,255,0.6);z-index:1;">
+                  <span style="font-size:64px;">💳⬇️</span>
+                  <span style="font-size:24px;font-weight:800;">TAP HERE</span>
+                </button>
+              </div>
+
+              <div style="font-size:34px;font-weight:600;margin-bottom:28px;">Tap card, phone, or watch to pay</div>
+              <div style="display:flex;gap:14px;">
+                <span style="padding:14px 24px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);font-size:22px;font-weight:600;display:flex;align-items:center;gap:8px;"> Pay</span>
+                <span style="padding:14px 24px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);font-size:22px;font-weight:600;">G Pay</span>
+                <span style="padding:14px 24px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);font-size:22px;font-weight:600;">💳 Tap card</span>
+              </div>
+              <button onClick="{{ goReceipt }}" style="margin-top:40px;font-size:22px;color:#7a7982;">← Back</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ payProcessing }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:180px;height:180px;border-radius:50%;border:5px solid rgba(176,97,255,0.18);border-top-color:#b061ff;animation:spin 0.9s linear infinite;margin-bottom:50px;"></div>
+              <div style="font-size:44px;font-weight:700;">Processing…</div>
+              <div style="font-size:26px;color:#8d8c95;margin-top:14px;">Don't move your card or phone.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ payApproved }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:200px;height:200px;border-radius:50%;background:rgba(102,224,163,0.14);border:2px solid #66e0a3;display:flex;align-items:center;justify-content:center;font-size:100px;color:#66e0a3;margin-bottom:46px;box-shadow:0 0 70px rgba(102,224,163,0.4);">✓</div>
+              <div style="font-size:56px;font-weight:800;">Approved</div>
+              <div style="font-size:28px;color:#8d8c95;margin-top:14px;">{{ totalFmt }} · receipt on its way</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ payDeclined }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;align-items:center;max-width:760px;">
+              <div style="width:200px;height:200px;border-radius:50%;background:rgba(255,122,122,0.12);border:2px solid #ff7a7a;display:flex;align-items:center;justify-content:center;font-size:100px;color:#ff7a7a;margin-bottom:40px;box-shadow:0 0 70px rgba(255,122,122,0.3);">✕</div>
+              <div style="font-size:56px;font-weight:800;">Card declined</div>
+              <div style="font-size:28px;color:#a9a8b0;margin-top:16px;line-height:1.4;text-align:center;">No charge was made. Try a different card, or use Apple&nbsp;Pay or Google&nbsp;Pay instead.</div>
+              <div style="display:flex;flex-direction:column;gap:14px;width:100%;max-width:560px;margin-top:48px;">
+                <button onClick="{{ retryPay }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:30px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:30px;font-weight:800;box-shadow:0 0 60px rgba(176,97,255,0.45);">↻ Try again</button>
+                <button onClick="{{ goHome }}" style="width:100%;padding:24px;border-radius:100px;border:1px solid rgba(255,255,255,0.16);font-size:24px;color:#cfcdd6;">Cancel order</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ================= DISPENSING ================= -->
+      <sc-if value="{{ s_dispense }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Dispensing" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.24em;color:#b061ff;margin-bottom:40px;">// DISPENSING YOUR PROTECTION</div>
+          <div style="font-size:140px;margin-bottom:30px;animation:tapbob 1.2s ease-in-out infinite;">👂</div>
+          <div style="font-size:50px;font-weight:800;margin-bottom:50px;">Your earplugs are on the way</div>
+          <div style="width:560px;height:18px;border-radius:100px;background:rgba(255,255,255,0.08);overflow:hidden;margin-bottom:22px;">
+            <div style="{{ dispenseBarStyle }}"></div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:24px;color:#9a99a2;">{{ dispensePctLabel }}</div>
+          <div style="margin-top:70px;padding:26px 40px;border-radius:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);font-size:27px;color:#cfcdd6;display:flex;align-items:center;gap:16px;">
+            <span style="font-size:34px;">👇</span> Collect them from the tray below
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= PHOTOBOOTH ================= -->
+      <sc-if value="{{ s_photobooth }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Photobooth" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;padding:44px;">
+
+          <sc-if value="{{ pbIntro }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.24em;color:#66e0a3;margin-bottom:24px;">{{ pbFreeLabel }}</div>
+              <div style="font-size:130px;margin-bottom:20px;">📸</div>
+              <h2 style="font-size:78px;font-weight:800;letter-spacing:-0.02em;margin:0 0 24px;line-height:0.96;">{{ pbHeadline }}</h2>
+              <p style="font-size:30px;color:#a9a8b0;max-width:680px;margin:0 0 56px;line-height:1.35;">{{ pbSubcopy }}</p>
+              <button onClick="{{ startPhotobooth }}" style="display:inline-flex;align-items:center;gap:14px;padding:32px 60px;border-radius:100px;background:#b061ff;color:#0a0a0a;font-size:34px;font-weight:800;box-shadow:0 0 60px rgba(176,97,255,0.5);margin-bottom:24px;">Start the photobooth →</button>
+              <sc-if value="{{ pbShowSkip }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ skipPhotobooth }}" style="font-size:24px;color:#7a7982;">No thanks, finish up</button>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ pbShooting }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;flex-direction:column;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.2em;color:#9a99a2;margin-bottom:20px;text-align:center;">SHOT {{ pbShotLabel }} OF 3 · #PROTECTYOURNIGHT</div>
+              <div style="flex:1;border-radius:28px;background:repeating-linear-gradient(135deg,#161620 0 18px,#101018 18px 36px);border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                <div style="position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 40%,rgba(176,97,255,0.16),transparent 70%);"></div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:22px;color:#6c6b73;letter-spacing:0.1em;z-index:1;">[ LIVE CAMERA FEED ]</span>
+                <sc-if value="{{ pbCounting }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;align-items:center;justify-content:center;z-index:2;">
+                    <span style="font-size:340px;font-weight:800;color:#fff;text-shadow:0 0 80px rgba(176,97,255,0.8);animation:tapbob 1s ease-in-out infinite;">{{ pbCount }}</span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ pbFlash }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;background:#fff;z-index:3;animation:flashfade 0.5s ease forwards;"></div>
+                </sc-if>
+                <div style="position:absolute;top:24px;right:24px;display:flex;gap:8px;z-index:2;">
+                  <sc-for list="{{ pbCells }}" as="cell" hint-placeholder-count="3">
+                    <span style="{{ cell.style }}"></span>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="text-align:center;font-size:28px;color:#cfcdd6;margin-top:24px;">Strike a pose with your earplugs! 🎉</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ pbReview }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <h2 style="font-size:56px;font-weight:800;letter-spacing:-0.02em;margin:6px 0 26px;text-align:center;">Looking good. 🔥</h2>
+              <div style="width:320px;background:#fff;border-radius:8px;padding:16px;box-shadow:0 30px 70px rgba(0,0,0,0.6);">
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+                  <div style="aspect-ratio:4/3;border-radius:4px;background:repeating-linear-gradient(135deg,#c9c4d6 0 14px,#bdb6cc 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6a6478;">[ PHOTO 1 ]</div>
+                  <div style="aspect-ratio:4/3;border-radius:4px;background:repeating-linear-gradient(135deg,#c4cdd6 0 14px,#b6bfcc 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#64707a;">[ PHOTO 2 ]</div>
+                  <div style="aspect-ratio:4/3;border-radius:4px;background:repeating-linear-gradient(135deg,#d6c9c4 0 14px,#ccb9b6 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#7a6864;">[ PHOTO 3 ]</div>
+                </div>
+                <div style="border-radius:5px;overflow:hidden;background:#08080a;padding:12px 0 10px;text-align:center;">
+                  <img src="images/epb-logo.png" alt="Ear Protection Booth" style="width:90%;height:auto;display:inline-block;" />
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.16em;color:#7a7982;margin-top:2px;">{{ venueName }} · #PROTECTYOURNIGHT</div>
+                </div>
+              </div>
+              <div style="font-size:24px;color:#9a99a2;margin:26px 0 14px;text-align:center;">Sending your strip to <b style="color:#cfcdd6;">{{ contactDisplay }}</b>…</div>
+              <div style="display:flex;align-items:center;gap:12px;padding:16px 26px;border-radius:100px;background:rgba(176,97,255,0.12);border:1px solid rgba(176,97,255,0.3);">
+                <span style="width:20px;height:20px;border-radius:50%;border:3px solid rgba(176,97,255,0.25);border-top-color:#b061ff;animation:spin 0.8s linear infinite;"></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.08em;color:#d7b4ff;">SENDING</span>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ================= DONE ================= -->
+      <sc-if value="{{ s_done }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Done" onClick="{{ reset }}" style="position:absolute;inset:0;animation:screenIn 0.35s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px;text-align:center;">
+          <div style="width:210px;height:210px;border-radius:50%;background:rgba(102,224,163,0.12);border:2px solid #66e0a3;display:flex;align-items:center;justify-content:center;font-size:110px;color:#66e0a3;margin-bottom:50px;box-shadow:0 0 80px rgba(102,224,163,0.4);">✓</div>
+          <h2 style="font-size:92px;font-weight:800;letter-spacing:-0.03em;margin:0 0 24px;line-height:0.96;">You're protected.</h2>
+          <p style="font-size:34px;color:#a9a8b0;max-width:720px;margin:0 0 50px;line-height:1.35;">Enjoy the night — all the music, none of the ringing. Receipt {{ sentVerb }} to <b style="color:#cfcdd6;">{{ contactDisplay }}</b>.</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:24px;letter-spacing:0.18em;color:#b061ff;margin-bottom:60px;">MADE FOR MUSIC, NOT SILENCE</div>
+          <div style="display:inline-flex;align-items:center;gap:14px;padding:26px 50px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);font-size:26px;font-weight:700;animation:glowpulse 2s infinite;">👆 Tap to finish</div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1080,&quot;height&quot;:1920},&quot;happyHour&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Venue setup&quot;},&quot;happyHourMinutesLeft&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:45,&quot;min&quot;:1,&quot;max&quot;:240,&quot;unit&quot;:&quot;min&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Venue setup&quot;},&quot;venueName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;PULSE · DTLA&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Venue setup&quot;},&quot;photoboothPrice&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:20,&quot;unit&quot;:&quot;$&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Venue setup&quot;},&quot;simulatePaymentDecline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+class Component extends DCLogic {
+  PRODUCTS = [
+    { id:'loop', brand:'Loop', name:'Experience 2', full:'Loop Experience 2', price:55, snr:'17 dB SNR',
+      tag:'Bold, fashion-forward design that stays put no matter how you move.',
+      desc:'Bold, fashion-forward design that stays put no matter how much you dance or move. Four ear-tip sizes for a perfect fit, plus a convenient carry case to keep your plugs protected and secure.',
+      handle:'@loopearplugs', image:'images/loop-gold.png', logo:'images/loop-logo.png',
+      benefits:['Stays put no matter how you move','Four ear-tip sizes for a perfect fit','Reusable · carry case included'],
+      gallery:[{img:'images/loop-life.webp',fit:'cover'},{img:'images/loop-case2.png',fit:'contain'}],
+      colorways:[{name:'Gold',hex:'#cdae54',img:'images/loop-gold.png',life:['images/loop-gold-life1.png','images/loop-gold-life2.png','images/loop-gold-box.png']},{name:'Silver',hex:'#c7cad0',img:'images/loop-silver.png',life:['images/loop-silver-life1.png','images/loop-silver-life2.png','images/loop-silver-box.png']}] },
+    { id:'hears', brand:'HEARS', name:'High Fidelity', full:'HEARS High Fidelity', price:46, snr:'20 dB', badge:'BEST SELLER',
+      tag:'Flat attenuation that works like a volume knob, not a wall.',
+      desc:'Flat attenuation technology works like a volume knob, not a wall — so sound stays crystal clear, never muffled. Hold easy conversations without taking them out, then tuck them into the compact travel case wherever the night takes you.',
+      handle:'@hearsearplugs', image:'images/hears-silvernight.png', logo:'images/hears-logo.svg',
+      benefits:['Flat attenuation — clear, never muffled','Chat without taking them out','Reusable · compact travel case included'],
+      gallery:[{img:'images/hears-life.webp',fit:'cover'},{img:'images/hears-case2.png',fit:'contain'}],
+      colorways:[{name:'Silver Night',hex:'#c7cad0',img:'images/hears-silvernight.png',life:['images/hears-silvernight-life.png','images/hears-silvernight-box.webp']},{name:'Clear Glass',hex:'#e9edf0',img:'images/hears-clearglass.png',life:['images/hears-clearglass-life.png','images/hears-clearglass-box.webp']},{name:'Pine Green',hex:'#4c5c4f',img:'images/hears-pinegreen.png',life:['images/hears-pinegreen-life.png','images/hears-pinegreen-box.webp']}] },
+    { id:'earpeace', brand:'EarPeace', name:'Music Pro', full:'EarPeace Music Pro', price:43, snr:'20 dB filter',
+      tag:'Budget-tailored noise reduction with all-day comfort.',
+      desc:'Budget-tailored noise reduction with all-day comfort. Two-sized silicone tips with a spare — just in case you lose one — and a dual-chamber aluminum case that clips to your keys, bag, or pants.',
+      handle:'@earpeaceearplugs', image:'images/earpeace-cutout.png', logo:'images/earpeace-logo.png', badge:'BEST VALUE',
+      benefits:['Budget-tailored, all-day comfort','Two tip sizes plus a spare','Dual-chamber aluminum case clips anywhere'],
+      gallery:[{img:'images/earpeace-life.png',fit:'cover'},{img:'images/earpeace-case2.png',fit:'contain'}],
+      colorways:null },
+  ];
+
+  state = {
+    scale: Math.min((window.innerWidth||1080)/1080, (window.innerHeight||1920)/1920) || 0.4,
+    screen:'idle',
+    selId:'loop', selColor:0, detailQty:1, detailView:0,
+    cart:[],
+    method:null, contact:'', legal:false, marketing:false,
+    payState:'idle', payAttempts:0,
+    dispenseProgress:0,
+    photoStep:'intro', pbShot:0, pbCount:3, pbFrames:0,
+    isPhotoOnly:false,
+  };
+
+  componentDidMount(){
+    this._onResize = () => this.setState({ scale: Math.min(window.innerWidth/1080, window.innerHeight/1920) });
+    window.addEventListener('resize', this._onResize);
+    this._activity = () => this.bumpActivity();
+    window.addEventListener('pointerdown', this._activity, true);
+    this._hhStart = Date.now();
+    this._hhTick = setInterval(()=>{ if(this.hhSecondsLeft()>0) this.forceUpdate(); }, 1000);
+  }
+  componentWillUnmount(){
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('pointerdown', this._activity, true);
+    if(this._hhTick) clearInterval(this._hhTick);
+    this.clearTimers();
+  }
+  hhSecondsLeft(){
+    const mins = this.props.happyHourMinutesLeft ?? 45;
+    const elapsed = Math.floor((Date.now()-(this._hhStart||Date.now()))/1000);
+    return Math.max(0, mins*60 - elapsed);
+  }
+  hhCountdownFmt(){
+    const s = this.hhSecondsLeft();
+    const m = Math.floor(s/60), ss = s%60;
+    return (m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;
+  }
+  bumpActivity(){
+    if(this.state.stillThere) this.setState({stillThere:false});
+    this.armInactivity();
+  }
+  armInactivity(){
+    clearTimeout(this._idleT); clearInterval(this._cdT);
+    if(this.state.screen==='idle') return;
+    this._idleT = setTimeout(()=>this.promptStillThere(), 60000);
+  }
+  promptStillThere(){
+    if(this.state.screen==='idle') return;
+    this.setState({stillThere:true, countdown:15});
+    clearInterval(this._cdT);
+    this._cdT = setInterval(()=>{
+      this.setState(s=>{ const c=s.countdown-1; if(c<=0){ clearInterval(this._cdT); this.reset(); return {countdown:0}; } return {countdown:c}; });
+    }, 1000);
+  }
+  clearTimers(){ (this._timers||[]).forEach(t=>clearTimeout(t)); if(this._dz)clearInterval(this._dz); clearTimeout(this._idleT); clearInterval(this._cdT); this._timers=[]; }
+  later(fn,ms){ if(!this._timers)this._timers=[]; const t=setTimeout(fn,ms); this._timers.push(t); return t; }
+
+  happyHour(){ return (this.props.happyHour ?? true) && this.hhSecondsLeft()>0; }
+  venueName(){ return this.props.venueName ?? 'PULSE · DTLA'; }
+  pbPrice(){ return this.props.photoboothPrice ?? 5; }
+  simDecline(){ return this.props.simulatePaymentDecline ?? false; }
+
+  // ---- stock helpers
+  productSoldOut(pr){ return pr.colorways ? pr.colorways.every(c=>c.soldOut) : !!pr.soldOut; }
+  firstInStockColor(pr){ if(!pr.colorways) return 0; const i=pr.colorways.findIndex(c=>!c.soldOut); return i<0?0:i; }
+  colorSoldOut(pr,i){ return pr.colorways ? !!(pr.colorways[i]&&pr.colorways[i].soldOut) : !!pr.soldOut; }
+
+  fmt(n){ return '$' + (Math.abs(n%1)<0.005 ? n.toFixed(0) : n.toFixed(2)); }
+
+  product(id){ return this.PRODUCTS.find(p=>p.id===id) || this.PRODUCTS[0]; }
+
+  computeTotals(cart){
+    let subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    let discount=0,label='';
+    const photoOnly = cart.length>0 && cart.every(i=>i.id==='photo');
+    if(this.happyHour() && !photoOnly && subtotal>0){
+      const units=[]; cart.forEach(i=>{ if(i.id!=='photo'){ for(let k=0;k<i.qty;k++) units.push(i.price); } });
+      const a = subtotal*0.05;
+      let b=0; if(units.length>=2){ b = Math.min.apply(null,units)*0.15; }
+      if(b>a){ discount=b; label='BOGO — 15% off your cheapest pair'; }
+      else { discount=a; label='5% off everything'; }
+    }
+    return { subtotal, discount, total:subtotal-discount, label, hasDiscount:discount>0.001 };
+  }
+
+  // ---- navigation
+  go(screen, extra){
+    this.setState(Object.assign({screen, stillThere:false}, extra||{}), ()=>this.armInactivity());
+    if(screen==='done'){ this.later(()=>this.reset(), 15000); }
+  }
+  onStart(){ this.go('browse'); }
+  goHome(){ this.clearTimers(); this.go('idle'); }
+  goBrowse(){ this.go('browse'); }
+  goCart(){ this.go('cart'); }
+  goReceipt(){ this.go('receipt'); }
+
+  selectProduct(id, colorIdx){ const pr=this.product(id); if(this.productSoldOut(pr)) return; const ci=(colorIdx!=null && !this.colorSoldOut(pr,colorIdx))?colorIdx:this.firstInStockColor(pr); this.go('detail',{selId:id, selColor:ci, detailQty:1, detailView:0}); }
+  setColor(i){ const pr=this.product(this.state.selId); if(this.colorSoldOut(pr,i)) return; this.setState({selColor:i, detailView:0}); }
+  setView(i){ this.setState({detailView:i}); }
+  detailDec(){ this.setState(s=>({detailQty:Math.max(1,s.detailQty-1)})); }
+  detailInc(){ this.setState(s=>({detailQty:Math.min(9,s.detailQty+1)})); }
+
+  addCurrent(){
+    const p=this.product(this.state.selId);
+    const cw = p.colorways ? p.colorways[this.state.selColor] : null;
+    const key = p.id+'|'+(cw?cw.name:'');
+    const qty=this.state.detailQty;
+    this.setState(s=>{
+      const cart=s.cart.filter(x=>x.id!=='photo').map(x=>({...x}));
+      const ex=cart.find(x=>x.key===key);
+      if(ex) ex.qty+=qty; else cart.push({key,id:p.id,name:p.full,price:p.price,colorway:cw?cw.name:null,swatch:cw?cw.hex:null,image:(cw&&cw.img)?cw.img:(p.image||''),qty});
+      return {cart, isPhotoOnly:false};
+    });
+  }
+  addAndCheckout(){ this.addCurrent(); this.go('cart'); }
+
+  photoOnly(){
+    this.setState({ cart:[{key:'photo',id:'photo',name:'Photobooth Session',price:this.pbPrice(),colorway:null,swatch:null,qty:1}], isPhotoOnly:true });
+    this.go('receipt');
+  }
+  confirmNoProtection(){ this.photoOnly(); }
+
+  changeQty(idx,d){
+    this.setState(s=>{
+      const cart=s.cart.map(x=>({...x}));
+      cart[idx].qty+=d;
+      const next=cart.filter(x=>x.qty>0);
+      return { cart:next, screen: next.length? s.screen : 'browse' };
+    });
+  }
+
+  // ---- receipt
+  pickMethod(m){ this.setState({method:m, contact:''}); }
+  typeChar(c){ this.setState(s=>{ const max=s.method==='text'?10:40; let v=s.contact; if(c==='space')v+=' '; else if(c==='.com')v+='.com'; else v+=c; if(s.method==='text') v=v.replace(/\D/g,'').slice(0,10); else v=v.slice(0,max); return {contact:v}; }); }
+  backspace(){ this.setState(s=>({contact:s.contact.slice(0,-1)})); }
+  toggleLegal(){ this.setState(s=>({legal:!s.legal})); }
+  toggleMarketing(){ this.setState(s=>({marketing:!s.marketing})); }
+
+  contactValid(){
+    const { method, contact } = this.state;
+    if(method==='text') return contact.replace(/\D/g,'').length>=10;
+    if(method==='email') return /\S+@\S+\.\S+/.test(contact);
+    return false;
+  }
+  canCheckout(){ return !!this.state.method && this.contactValid() && this.state.legal; }
+
+  formatPhone(d){
+    d=d.replace(/\D/g,'');
+    if(!d) return '';
+    if(d.length<=3) return '('+d;
+    if(d.length<=6) return '('+d.slice(0,3)+') '+d.slice(3);
+    return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6,10);
+  }
+
+  // ---- payment
+  goPay(){ this.go('pay',{payState:'idle'}); }
+  doPay(){
+    this.setState(s=>({payState:'processing', payAttempts:s.payAttempts+1}));
+    this.later(()=>{
+      // simulate a decline on the first attempt when enabled
+      const declineNow = this.simDecline() && this.state.payAttempts<=1;
+      if(declineNow){ this.setState({payState:'declined'}); return; }
+      this.setState({payState:'approved'});
+      this.later(()=>{
+        if(this.state.isPhotoOnly){ this.go('photobooth',{photoStep:'intro'}); }
+        else { this.startDispense(); }
+      },1200);
+    },1900);
+  }
+  retryPay(){ this.setState({payState:'idle'}); this.armInactivity(); }
+
+  startDispense(){
+    this.go('dispense',{dispenseProgress:0});
+    if(this._dz) clearInterval(this._dz);
+    this._dz=setInterval(()=>{
+      this.setState(s=>{
+        const p=Math.min(100, s.dispenseProgress+3);
+        if(p>=100){ clearInterval(this._dz); this.later(()=>this.go('photobooth',{photoStep:'intro'}),1000); }
+        return {dispenseProgress:p};
+      });
+    },70);
+  }
+
+  // ---- photobooth
+  startPhotobooth(){ this.setState({photoStep:'shooting', pbFrames:0, pbShot:0}); this.runShot(0); }
+  runShot(n){
+    this.setState({photoStep:'shooting', pbSub:'counting', pbShot:n, pbCount:3});
+    this.later(()=>this.setState({pbCount:2}),850);
+    this.later(()=>this.setState({pbCount:1}),1700);
+    this.later(()=>this.setState({pbSub:'flash'}),2550);
+    this.later(()=>{
+      this.setState(s=>({pbFrames:Math.min(3,s.pbFrames+1)}));
+      if(n<2){ this.runShot(n+1); }
+      else {
+        this.setState({photoStep:'review', pbSub:null});
+        this.later(()=>this.finishFromPhoto(), 4000);
+      }
+    },2950);
+  }
+  skipPhotobooth(){ this.go('done'); }
+  finishFromPhoto(){ this.go('done'); }
+
+  reset(){
+    this.clearTimers();
+    this.setState({ screen:'idle', selId:'loop', selColor:0, detailQty:1, cart:[], method:null, contact:'', legal:false, marketing:false, payState:'idle', payAttempts:0, dispenseProgress:0, photoStep:'intro', pbShot:0, pbCount:3, pbFrames:0, isPhotoOnly:false });
+  }
+
+  buildKeyRows(){
+    const mk=(label)=>({ label: label==='space'?'space':(label==='.com'?'.com':label), raw:label, onPress: label==='⌫'? ()=>this.backspace() : (label===''? ()=>{} : ()=>this.typeChar(label)) });
+    const keyBase='flex:1;min-width:0;height:96px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);font-size:34px;font-weight:600;display:flex;align-items:center;justify-content:center;color:#f5f4f2;';
+    const blankStyle='flex:1;height:96px;visibility:hidden;';
+    const decorate=(arr)=>arr.map(o=>({ label:o.label, onPress:o.onPress, style:(o.raw===''?blankStyle:keyBase) }));
+    if(this.state.method==='email'){
+      const rows=[ 'qwertyuiop'.split(''), 'asdfghjkl'.split(''), 'zxcvbnm'.split('').concat(['⌫']), ['@','.com','_','space'] ];
+      return rows.map(r=>({ keys:decorate(r.map(mk)) }));
+    }
+    const rows=[ ['1','2','3'], ['4','5','6'], ['7','8','9'], ['','0','⌫'] ];
+    return rows.map(r=>({ keys:decorate(r.map(mk)) }));
+  }
+
+  renderVals(){
+    const st=this.state;
+    const screen=st.screen;
+    const totals=this.computeTotals(st.cart);
+    const p=this.product(st.selId);
+    const cwSel = p.colorways? p.colorways[st.selColor]:null;
+    const cartCount = st.cart.filter(i=>i.id!=='photo').reduce((s,i)=>s+i.qty,0);
+    const flowStep = (['browse','detail','cart'].includes(screen))?0:(['receipt','pay'].includes(screen))?1:(['dispense','photobooth','done'].includes(screen))?2:-1;
+    const showStepper = flowStep>=0 && !['photobooth','done'].includes(screen);
+    const steps = ['Pick','Pay','Collect'].map((l,i)=>{
+      const state = i<flowStep?'done':(i===flowStep?'active':'todo');
+      return { label:l, mark: state==='done'?'✓':String(i+1), notLast:i<2,
+        circleStyle:'width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;font-family:\'JetBrains Mono\',monospace;flex-shrink:0;'+(state==='done'?'background:#66e0a3;color:#0a0a0a;':state==='active'?'background:#b061ff;color:#0a0a0a;box-shadow:0 0 18px rgba(176,97,255,0.6);':'background:rgba(255,255,255,0.07);color:#6c6b73;border:1px solid rgba(255,255,255,0.12);'),
+        labelStyle:'font-size:19px;font-weight:700;letter-spacing:0.01em;'+(state==='todo'?'color:#6c6b73;':(state==='active'?'color:#f5f4f2;':'color:#9fe6c4;')),
+        lineStyle:'flex:1;height:2px;border-radius:2px;'+(i<flowStep?'background:#66e0a3;':'background:rgba(255,255,255,0.1);') };
+    });
+    const swSt=(hex,size)=>({display:'inline-block',width:size+'px',height:size+'px',borderRadius:'50%',background:hex,boxShadow:'inset 0 0 0 1px rgba(255,255,255,0.18)'});
+    const iconFor=(id)=> id==='photo'?'📸': id==='loop'?'🟣': id==='hears'?'⬛':'⚪';
+
+    const methodPill=(active)=>'flex:1;padding:24px;border-radius:14px;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;'+(active?'background:rgba(176,97,255,0.16);border:1px solid #b061ff;color:#e3cdff;':'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:#9a99a2;');
+    const boxStyle=(on)=>'width:38px;height:38px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;'+(on?'background:#b061ff;color:#0a0a0a;':'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.25);color:transparent;');
+
+    const contactDisplay = st.method==='text' ? (this.formatPhone(st.contact)||'(   )    -    ') : (st.contact|| 'name@email.com');
+    const cc = this.canCheckout();
+    let hint='Choose how to get your receipt';
+    if(st.method && !this.contactValid()) hint = st.method==='text'?'Enter your phone number':'Enter your email';
+    else if(st.method && this.contactValid() && !st.legal) hint='Accept the required terms to continue';
+
+    const barSt=(big)=>({display:'inline-block',width:big?'9px':'4px',background:'#b061ff',borderRadius:'4px',transformOrigin:'bottom',boxShadow:big?'0 0 14px rgba(176,97,255,0.7)':'none'});
+    const bars=[0.5,0.9,0.35,1,0.6,0.85,0.45].map((h,i)=>({
+      bigStyle: Object.assign({}, barSt(true), {height:(28+h*36)+'px', animation:`eq ${0.7+i*0.07}s ease-in-out infinite`, animationDelay:`${i*0.09}s`}),
+      miniStyle: Object.assign({}, barSt(false), {height:(10+h*16)+'px', animation:`eq ${0.7+i*0.07}s ease-in-out infinite`, animationDelay:`${i*0.09}s`}),
+    }));
+
+    const thumbBg=(url,cover,sold)=>'position:relative;display:flex;align-items:center;justify-content:center;width:264px;flex-shrink:0;border-radius:18px;border:1px solid rgba(255,255,255,0.07);overflow:hidden;background-color:#101014;background-repeat:no-repeat;background-position:center;'+(url?('background-image:url("'+url+'");'):'')+(cover?'background-size:cover;':'padding:18px;background-origin:content-box;background-clip:content-box;background-size:contain;')+(sold?'filter:grayscale(0.7);':'');
+    const products=this.PRODUCTS.map(pr=>{
+      const sold=this.productSoldOut(pr);
+      const thumbImg=pr.thumb||pr.image||'';
+      const thumbFit=pr.thumb?(pr.thumbFit==='cover'):(pr.imgFit==='cover');
+      return {
+      brand:pr.brand, name:pr.name, snr:pr.snr, tag:pr.tag, priceFmt:this.fmt(pr.price),
+      image:thumbImg, hasImage:!!thumbImg, noImage:!thumbImg,
+      thumbStyle: thumbBg(thumbImg, thumbFit, sold),
+      badge:pr.badge||'', hasBadge:!!pr.badge && !sold,
+      logo:pr.logo||'', hasLogo:!!pr.logo,
+      hasSwatches:!!pr.colorways,
+      swatches:(pr.colorways||[]).slice(0,5).map(c=>({style:Object.assign({},swSt(c.hex,22),c.soldOut?{opacity:0.3}:{})})),
+      soldOut:sold, inStock:!sold,
+      cardStyle:'display:flex;gap:30px;align-items:stretch;text-align:left;padding:30px;border-radius:24px;width:100%;'+(sold?'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);':'background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.09);'),
+      ctaStyle:'display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:100px;font-size:24px;font-weight:700;'+(sold?'background:rgba(255,255,255,0.06);color:#6c6b73;border:1px solid rgba(255,255,255,0.08);':'background:#b061ff;color:#0a0a0a;'),
+      ctaLabel: sold?'Sold out':'Select →',
+      onSelect:()=>this.selectProduct(pr.id),
+    };});
+
+    // flat grid: one card per colorway (or one per product if no colorways)
+    const browseCards=[];
+    this.PRODUCTS.forEach(pr=>{
+      const entries = pr.colorways && pr.colorways.length ? pr.colorways.map((c,ci)=>({c,ci})) : [{c:null,ci:0}];
+      entries.forEach(({c,ci})=>{
+        const sold = c ? !!c.soldOut : !!pr.soldOut;
+        const img = (c&&c.img) || pr.thumb || pr.image || '';
+        const fit = pr.thumb ? (pr.thumbFit==='cover') : (pr.imgFit==='cover');
+        browseCards.push({
+          brand:pr.brand, name: c? c.name : pr.name, category:pr.snr+' · '+pr.brand+' '+pr.name,
+          priceFmt:this.fmt(pr.price), soldOut:sold,
+          hasBadge: !!pr.badge && !sold, badge:pr.badge||'',
+          thumbStyle: 'position:relative;width:100%;aspect-ratio:1/1;border-radius:20px;overflow:hidden;background-color:#131318;background-repeat:no-repeat;background-position:center;'+(img?('background-image:url("'+img+'");'):'')+(fit?'background-size:cover;':'padding:22px;background-origin:content-box;background-clip:content-box;background-size:contain;')+(sold?'filter:grayscale(0.7);opacity:0.55;':''),
+          hasImage:!!img, noImage:!img,
+          onSelect: sold? ()=>{} : ()=>this.selectProduct(pr.id, ci),
+        });
+      });
+    });
+
+    const prodImg=(id)=>{ const pr=this.PRODUCTS.find(x=>x.id===id); return pr&&pr.image?pr.image:''; };
+    const cartThumb=(im)=>'width:120px;height:120px;flex-shrink:0;border-radius:14px;border:1px solid rgba(255,255,255,0.07);overflow:hidden;background-color:#101014;background-repeat:no-repeat;background-position:center;padding:10px;background-origin:content-box;background-clip:content-box;background-size:contain;'+(im?('background-image:url("'+im+'");'):'');
+    const cartItems=st.cart.map((it,idx)=>{ const im=it.image||prodImg(it.id); return {
+      name:it.name, qty:it.qty, colorway:it.colorway, hasSwatch:!!it.swatch, icon:iconFor(it.id),
+      image:im, hasImage:!!im, noImage:!im, thumbStyle:cartThumb(im),
+      priceFmt:this.fmt(it.price), lineFmt:this.fmt(it.price*it.qty),
+      swatchStyle: it.swatch? swSt(it.swatch,20):{display:'none'},
+      onInc:()=>this.changeQty(idx,1), onDec:()=>this.changeQty(idx,-1),
+    };});
+
+    const cpColorways=(p.colorways||[]).map((c,i)=>({
+      name: c.soldOut? c.name+' · Sold out' : c.name, onPick:()=>this.setColor(i),
+      wrapStyle:'display:flex;align-items:center;gap:11px;padding:12px 18px 12px 12px;border-radius:100px;'+(c.soldOut?'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);opacity:0.55;':(i===st.selColor?'background:rgba(176,97,255,0.14);border:1px solid #b061ff;':'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);')),
+      dotStyle: Object.assign({}, swSt(c.hex,30), c.soldOut?{opacity:0.5}:{}, (i===st.selColor&&!c.soldOut)?{boxShadow:'inset 0 0 0 1px rgba(255,255,255,0.18), 0 0 0 3px rgba(176,97,255,0.5)'}:{}),
+    }));
+    const selColorSold=this.colorSoldOut(p,st.selColor);
+    const prodSold=this.productSoldOut(p);
+    const addBlocked=selColorSold||prodSold;
+    const addBtnStyle='flex:1;display:flex;align-items:center;justify-content:center;gap:14px;padding:30px;border-radius:100px;font-size:30px;font-weight:800;'+(addBlocked?'background:rgba(255,255,255,0.06);color:#6c6b73;border:1px solid rgba(255,255,255,0.08);':'background:#b061ff;color:#0a0a0a;box-shadow:0 0 50px rgba(176,97,255,0.4);');
+    const addBtnLabel=addBlocked?'Sold out — pick another colorway':('Add to cart · '+this.fmt(p.price*st.detailQty)+' →');
+    const colorImg=(cwSel&&cwSel.img)?cwSel.img:(p.image||'');
+    const lifeArr=(cwSel&&cwSel.life)?(Array.isArray(cwSel.life)?cwSel.life:[cwSel.life]):[];
+    const colorLifeView=lifeArr.map(u=>({img:u,fit:true}));
+    const views=[{img:colorImg,fit:p.imgFit==='cover'}].concat(colorLifeView).concat((p.gallery||[]).map(g=>({img:g.img,fit:g.fit==='cover'})));
+    const vIdx=Math.min(st.detailView||0, views.length-1);
+    const active=views[vIdx]||views[0];
+    const cpImg=active.img, cpFit=active.fit;
+    const cpHeroStyle='position:relative;width:1000px;max-width:100%;height:524px;border-radius:26px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;background-repeat:no-repeat;background-position:center;'+(cpImg?(cpFit?('background-image:url("'+cpImg+'");background-size:cover;'):('background-color:#0e0c14;background-image:url("'+cpImg+'");background-size:auto 78%;')):'background-image:radial-gradient(60% 60% at 50% 45%,rgba(176,97,255,0.14),rgba(255,255,255,0.02));');
+    const cpLogoStyle='position:absolute;top:26px;left:28px;height:34px;width:210px;background-image:url("'+(p.logo||'')+'");background-repeat:no-repeat;background-position:left center;background-size:contain;z-index:2;';
+    const viewThumb=(url,cover,sel)=>'width:90px;height:90px;flex-shrink:0;border-radius:14px;overflow:hidden;background-color:#101014;background-repeat:no-repeat;background-position:center;'+(url?('background-image:url("'+url+'");'):'')+(cover?'background-size:cover;':'padding:9px;background-origin:content-box;background-clip:content-box;background-size:contain;')+(sel?'border:2px solid #b061ff;box-shadow:0 0 0 3px rgba(176,97,255,0.25);':'border:1px solid rgba(255,255,255,0.14);');
+    const cpViews=views.map((v,i)=>({ style:viewThumb(v.img,v.fit,i===vIdx), onPick:()=>this.setView(i) }));
+    const cpHasViews=views.length>1;
+
+    const pbCells=[0,1,2].map(i=>({ style:{display:'inline-block',width:'18px',height:'18px',borderRadius:'50%',background: i<st.pbFrames?'#66e0a3':'rgba(255,255,255,0.2)', boxShadow:i<st.pbFrames?'0 0 10px #66e0a3':'none'} }));
+
+    return {
+      scale:st.scale,
+      showChrome: screen!=='idle',
+      happyHour:this.happyHour(), venueName:this.venueName(),
+      photoboothPriceFmt:this.fmt(this.pbPrice()),
+      cartHasItems: st.cart.length>0, cartCount, totalFmt:this.fmt(totals.total),
+      bars, steps, showStepper, hhCountdown:this.hhCountdownFmt(),
+
+      s_idle:screen==='idle', s_browse:screen==='browse', s_detail:screen==='detail',
+      s_cart:screen==='cart', s_receipt:screen==='receipt', s_pay:screen==='pay',
+      s_dispense:screen==='dispense', s_photobooth:screen==='photobooth', s_done:screen==='done', s_photowarn:screen==='photowarn',
+      confirmNoProtection:()=>this.confirmNoProtection(),
+
+      onStart:()=>this.onStart(), goHome:()=>this.goHome(), goBrowse:()=>this.goBrowse(),
+      goCart:()=>this.goCart(), goReceipt:()=>this.goReceipt(),
+
+      products, browseCards, onPhotoOnly:()=>this.go('photowarn'),
+
+      cpName:p.full, cpBrand:p.brand, cpUpper:p.full.toUpperCase(), cpSnr:p.snr, cpDesc:p.desc, cpHandle:p.handle,
+      cpHeroStyle, cpNoImage:!cpImg,
+      cpLogoStyle, cpHasLogo:!!p.logo, cpNoLogo:!p.logo,
+      cpViews, cpHasViews,
+      cpPriceFmt:this.fmt(p.price), cpBenefits:p.benefits,
+      cpHasColorways:!!p.colorways, cpColorways, cpColorName: cwSel?cwSel.name:'',
+      detailQty:st.detailQty, cpAddTotalFmt:this.fmt(p.price*st.detailQty),
+      onDetailInc:()=>this.detailInc(), onDetailDec:()=>this.detailDec(),
+      onAddAndCheckout: addBlocked? ()=>{} : ()=>this.addAndCheckout(),
+      addBtnStyle, addBtnLabel,
+
+      cartItems, subtotalFmt:this.fmt(totals.subtotal), discountFmt:this.fmt(totals.discount),
+      hasDiscount:totals.hasDiscount, discountLabel:totals.label,
+      bogoNudge: this.happyHour() && !(st.cart.length>0 && st.cart.every(i=>i.id==='photo')) && cartCount===1,
+
+      methodTextStyle:methodPill(st.method==='text'), methodEmailStyle:methodPill(st.method==='email'),
+      pickText:()=>this.pickMethod('text'), pickEmail:()=>this.pickMethod('email'),
+      contactDisplay, contactColor: (st.contact?'color:#f5f4f2;':'color:#5a5961;'),
+      showContactError: !!st.method && st.contact.length>0 && !this.contactValid(),
+      contactErrorMsg: st.method==='text' ? 'Enter all 10 digits of your mobile number' : 'That doesn\u2019t look like a valid email — check for @ and a domain',
+      showContactOk: !!st.method && this.contactValid(),
+      contactBorder: (!!st.method && st.contact.length>0 && !this.contactValid()) ? 'border:1px solid rgba(255,122,122,0.55);' : (!!st.method && this.contactValid() ? 'border:1px solid rgba(102,224,163,0.5);' : 'border:1px solid rgba(255,255,255,0.14);'),
+      keyRows:this.buildKeyRows(),
+      legalBoxStyle:boxStyle(st.legal), legalCheck: st.legal?'✓':'',
+      mktBoxStyle:boxStyle(st.marketing), mktCheck: st.marketing?'✓':'',
+      toggleLegal:()=>this.toggleLegal(), toggleMarketing:()=>this.toggleMarketing(),
+      canCheckout:cc, cantCheckout:!cc, checkoutHint:hint, goPay:()=>this.goPay(),
+
+      payIdle:st.payState==='idle', payProcessing:st.payState==='processing', payApproved:st.payState==='approved', payDeclined:st.payState==='declined',
+      doPay:()=>this.doPay(), retryPay:()=>this.retryPay(),
+
+      dispensePctLabel: st.dispenseProgress+'%',
+      dispenseBarStyle:{height:'100%',width:st.dispenseProgress+'%',background:'linear-gradient(90deg,#9b4dff,#b061ff)',borderRadius:'100px',boxShadow:'0 0 24px rgba(176,97,255,0.6)',transition:'width 0.1s linear'},
+
+      pbIntro:st.photoStep==='intro', pbShooting:st.photoStep==='shooting', pbReview:st.photoStep==='review',
+      pbCounting:st.pbSub==='counting', pbFlash:st.pbSub==='flash', pbCount:st.pbCount,
+      pbShotLabel:(st.pbShot+1), pbCells,
+      pbFreeLabel: st.isPhotoOnly? '// PHOTOBOOTH SESSION' : '// FREE WITH YOUR PURCHASE',
+      pbHeadline: st.isPhotoOnly? 'Your photobooth' : 'Your free photobooth',
+      pbSubcopy: st.isPhotoOnly? 'Strike a pose and we\u2019ll send your strip to you — no earplugs this time, but there\u2019s still time to grab a pair after.' : 'Show the world you protect your hearing. Snap a strip with your new earplugs — we\u2019ll send it to you.',
+      pbShowSkip: !st.isPhotoOnly,
+      startPhotobooth:()=>this.startPhotobooth(), skipPhotobooth:()=>this.skipPhotobooth(),
+      finishFromPhoto:()=>this.finishFromPhoto(),
+      sendVerb: st.method==='email'?'email':'text',
+      sentVerb: st.method==='email'?'emailed':'texted',
+
+      reset:()=>this.reset(),
+      stillThere:st.stillThere, countdown:st.countdown, dismissStillThere:()=>this.bumpActivity(),
+    };
+  }
+}
+</script>
+</body>
+</html>
